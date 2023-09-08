@@ -1,0 +1,44 @@
+{
+    "variables": {
+      "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+      "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+    },
+    "builders": [
+      {
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "us-east-1",
+        "source_ami_filter": {
+          "filters": {
+            "name": "RHEL-8*",
+            "root-device-type": "ebs",
+            "virtualization-type": "hvm",
+            "architecture": "x86_64"
+          },
+          "owners": ["309956199498"],  // Official Red Hat account ID
+          "most_recent": true
+        },
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "rhel8-containerd-{{timestamp}}",
+        "associate_public_ip_address": true,
+        "user_data_file": "user_data.sh",
+        "ami_block_device_mappings": [
+          {
+            "device_name": "/dev/xvda",
+            "volume_type": "gp2",
+            "delete_on_termination": true,
+            "volume_size": 50
+          }
+        ]
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "script": "install_containerd.sh"
+      }
+    ]
+  }
+  
