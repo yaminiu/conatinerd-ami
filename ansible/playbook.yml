@@ -1,0 +1,11 @@
+---
+- name: Provision the EC2 instance
+  hosts: all
+  tasks:
+    - name: Install Containerd
+      become: yes
+      command: >
+        dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo &&
+        dnf install -y containerd.io &&
+        systemctl enable containerd &&
+        systemctl start containerd
